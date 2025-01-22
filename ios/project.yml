@@ -1,0 +1,41 @@
+name: Plugin
+options:
+  deploymentTarget:
+    iOS: 13.0
+  xcodeVersion: "13.0"
+  generateEmptyDirectories: true
+  createIntermediateGroups: true
+targets:
+  Plugin:
+    type: framework
+    platform: iOS
+    deploymentTarget: "13.0"
+    sources:
+      - path: Plugin
+        excludes: ["Info.plist"]
+    settings:
+      PRODUCT_BUNDLE_IDENTIFIER: com.getcapacitor.Plugin
+      INFOPLIST_FILE: Plugin/Info.plist
+      MARKETING_VERSION: 1.0.0
+      CURRENT_PROJECT_VERSION: 1
+    dependencies:
+      - framework: WebRTC
+    info:
+      path: Plugin/Info.plist
+      properties:
+        CFBundlePackageType: $(PRODUCT_BUNDLE_PACKAGE_TYPE)
+        CFBundleIdentifier: $(PRODUCT_BUNDLE_IDENTIFIER)
+        CFBundleName: $(PRODUCT_NAME)
+        CFBundleDisplayName: $(PRODUCT_NAME)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+  PluginTests:
+    type: bundle.unit-test
+    platform: iOS
+    deploymentTarget: "13.0"
+    sources:
+      - path: PluginTests
+    dependencies:
+      - target: Plugin
+    settings:
+      PRODUCT_BUNDLE_IDENTIFIER: com.getcapacitor.Plugin.Tests 

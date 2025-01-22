@@ -1,0 +1,4 @@
+${PODS_ROOT}/Target Support Files/Pods-PluginTests/Pods-PluginTests-frameworks.sh
+${BUILT_PRODUCTS_DIR}/Capacitor/Capacitor.framework
+${BUILT_PRODUCTS_DIR}/CapacitorCordova/Cordova.framework
+${PODS_ROOT}/WebRTC/WebRTC.framework
