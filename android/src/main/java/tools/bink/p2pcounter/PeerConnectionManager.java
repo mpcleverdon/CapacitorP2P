@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 
 public class PeerConnectionManager implements PeerConnection.Observer, DataChannel.Observer {
     private static final String TAG = "PeerConnectionManager";

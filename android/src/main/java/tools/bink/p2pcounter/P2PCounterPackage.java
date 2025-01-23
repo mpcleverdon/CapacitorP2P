@@ -1,10 +1,9 @@
 package tools.bink.p2pcounter;
 
 import com.getcapacitor.Plugin;
-import com.getcapacitor.PluginLoad;
 import com.getcapacitor.annotation.CapacitorPlugin;
 
-@PluginLoad(plugins = {
-    P2PCounterPlugin.class
-})
-public class P2PCounterPackage {} 
+@CapacitorPlugin(name = "P2PCounter")
+public class P2PCounterPackage extends Plugin {
+    // Empty class, just for plugin registration
+}
