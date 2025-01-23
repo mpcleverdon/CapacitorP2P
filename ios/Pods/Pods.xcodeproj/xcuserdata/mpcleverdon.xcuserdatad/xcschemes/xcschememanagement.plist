@@ -14,17 +14,17 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
+		<key>GoogleWebRTC.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
 		<key>Pods-Plugin.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
 		</dict>
 		<key>Pods-PluginTests.xcscheme</key>
-		<dict>
-			<key>isShown</key>
-			<false/>
-		</dict>
-		<key>WebRTC.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>

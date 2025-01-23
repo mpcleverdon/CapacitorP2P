@@ -1,17 +1,17 @@
 PODS:
-  - Capacitor (5.7.8):
+  - Capacitor (6.2.0):
     - CapacitorCordova
-  - CapacitorCordova (5.7.8)
-  - WebRTC (63.11.20455)
+  - CapacitorCordova (6.2.0)
+  - GoogleWebRTC (1.1.32000)
 
 DEPENDENCIES:
   - "Capacitor (from `../node_modules/@capacitor/ios`)"
   - "CapacitorCordova (from `../node_modules/@capacitor/ios`)"
-  - WebRTC
+  - GoogleWebRTC (~> 1.1)
 
 SPEC REPOS:
-  trunk:
-    - WebRTC
+  https://github.com/CocoaPods/Specs.git:
+    - GoogleWebRTC
 
 EXTERNAL SOURCES:
   Capacitor:
@@ -20,10 +20,10 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@capacitor/ios"
 
 SPEC CHECKSUMS:
-  Capacitor: 747aadb4fa786f460d8cd9d0557cb81440a13747
-  CapacitorCordova: 31ab98dca2ddcee051027a1afe7e8c85c82f7297
-  WebRTC: f2a6203584745fe53532633397557876b5d71640
+  Capacitor: 1f3c7b9802d958cd8c4eb63895fff85dff2e1eea
+  CapacitorCordova: b33e7f4aa4ed105dd43283acdd940964374a87d9
+  GoogleWebRTC: 4d261187b30512efdb711d21fa961a6adf138717
 
-PODFILE CHECKSUM: 001561e7be772e717fe7ac76fd09fb0f854cc778
+PODFILE CHECKSUM: 05b54777af76e1173b17366540824407d2e59eeb
 
 COCOAPODS: 1.16.2
