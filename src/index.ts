@@ -2,7 +2,18 @@ import { registerPlugin } from '@capacitor/core';
 
 import type { P2PCounterPlugin } from './definitions';
 
-const P2PCounter = registerPlugin<P2PCounterPlugin>('P2PCounter');
+export type {
+  P2PCounterPlugin,
+  Attendee,
+  NetworkStats,
+  NFCDiscoveredEvent,
+  NFCErrorEvent,
+  NFCPushCompleteEvent,
+  PeerEvent,
+  CounterEvent,
+  MeshDiscoveryEvent,
+  MessageEvent,
+  MessageStatusEvent
+} from './definitions';
 
-export * from './definitions';
-export { P2PCounter };
+export const P2PCounter = registerPlugin<P2PCounterPlugin>('P2PCounter');

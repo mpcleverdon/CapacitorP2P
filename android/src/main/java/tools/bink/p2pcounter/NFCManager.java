@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.tech.IsoDep;
+import android.nfc.NdefMessage;
+import android.nfc.NdefRecord;
 import android.util.Log;
 import com.getcapacitor.JSObject;
 import org.json.JSONObject;
@@ -52,9 +54,19 @@ public class NFCManager implements P2PCounterHCEService.NFCCallback {
             JSObject result = new JSObject();
             result.put("deviceId", peerDeviceId);
             result.put("timestamp", timestamp);
-            plugin.notifyListeners("nfcDiscovered", result);
+            plugin.notifyWebRTCEvent("nfcDiscovered", result);
         } catch (Exception e) {
             Log.e(TAG, "Error handling NFC message", e);
+        }
+    }
+
+    public void handleNdefMessage(NdefMessage message) {
+        try {
+            NdefRecord record = message.getRecords()[0];
+            String payload = new String(record.getPayload());
+            onMessageReceived(payload);
+        } catch (Exception e) {
+            Log.e(TAG, "Error handling NDEF message", e);
         }
     }
 } 

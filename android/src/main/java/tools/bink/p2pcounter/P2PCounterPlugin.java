@@ -11,6 +11,7 @@ import com.getcapacitor.PluginMethod;
 import com.getcapacitor.annotation.CapacitorPlugin;
 import com.getcapacitor.JSObject;
 import org.webrtc.*;
+import android.util.Log;
 
 @CapacitorPlugin(name = "P2PCounter")
 public class P2PCounterPlugin extends Plugin {
@@ -21,20 +22,73 @@ public class P2PCounterPlugin extends Plugin {
     
     @Override
     public void load() {
-        // Initialize WebRTC
-        eglBase = EglBase.create();
-        PeerConnectionFactory.initialize(
-            PeerConnectionFactory.InitializationOptions.builder(getContext())
-                .createInitializationOptions()
-        );
-        
-        peerConnectionFactory = PeerConnectionFactory.builder()
-            .setVideoEncoderFactory(null)
-            .setVideoDecoderFactory(null)
-            .createPeerConnectionFactory();
+        try {
+            Log.d("P2PCounterPlugin", "Starting plugin load");
+            
+            if (getContext() == null) {
+                Log.e("P2PCounterPlugin", "Context is null");
+                return;
+            }
+            
+            // Initialize WebRTC
+            try {
+                eglBase = EglBase.create();
+                Log.d("P2PCounterPlugin", "EglBase created");
+            } catch (Exception e) {
+                Log.e("P2PCounterPlugin", "Error creating EglBase", e);
+                return;
+            }
+            
+            try {
+                PeerConnectionFactory.initialize(
+                    PeerConnectionFactory.InitializationOptions.builder(getContext())
+                        .createInitializationOptions()
+                );
+                Log.d("P2PCounterPlugin", "PeerConnectionFactory initialized");
+            } catch (Exception e) {
+                Log.e("P2PCounterPlugin", "Error initializing PeerConnectionFactory", e);
+                return;
+            }
+            
+            try {
+                peerConnectionFactory = PeerConnectionFactory.builder()
+                    .setVideoEncoderFactory(null)
+                    .setVideoDecoderFactory(null)
+                    .createPeerConnectionFactory();
+                Log.d("P2PCounterPlugin", "PeerConnectionFactory created");
+            } catch (Exception e) {
+                Log.e("P2PCounterPlugin", "Error creating PeerConnectionFactory", e);
+                return;
+            }
 
-        peerConnectionManager = new PeerConnectionManager(peerConnectionFactory, this);
-        nfcManager = new NFCManager(this, getActivity());
+            try {
+                String deviceId = String.valueOf(System.currentTimeMillis());
+                peerConnectionManager = new PeerConnectionManager(
+                    peerConnectionFactory, 
+                    this,
+                    getContext(),
+                    deviceId
+                );
+                Log.d("P2PCounterPlugin", "PeerConnectionManager created");
+            } catch (Exception e) {
+                Log.e("P2PCounterPlugin", "Error creating PeerConnectionManager", e);
+                return;
+            }
+            
+            try {
+                Activity activity = getActivity();
+                if (activity == null) {
+                    Log.e("P2PCounterPlugin", "Activity is null");
+                    return;
+                }
+                nfcManager = new NFCManager(this, activity);
+                Log.d("P2PCounterPlugin", "Plugin load complete");
+            } catch (Exception e) {
+                Log.e("P2PCounterPlugin", "Error creating NFCManager", e);
+            }
+        } catch (Exception e) {
+            Log.e("P2PCounterPlugin", "Error loading plugin", e);
+        }
     }
     
     @PluginMethod
@@ -62,7 +116,7 @@ public class P2PCounterPlugin extends Plugin {
             return;
         }
         
-        peerConnectionManager.handleRemoteSessionDescription(deviceId, sdp, type);
+        peerConnectionManager.setRemoteDescription(deviceId, sdp, type);
         call.resolve();
     }
 
@@ -78,7 +132,7 @@ public class P2PCounterPlugin extends Plugin {
             return;
         }
         
-        peerConnectionManager.handleRemoteIceCandidate(deviceId, sdp, sdpMLineIndex, sdpMid);
+        peerConnectionManager.addIceCandidate(deviceId, sdp, sdpMLineIndex, sdpMid);
         call.resolve();
     }
 
@@ -92,7 +146,7 @@ public class P2PCounterPlugin extends Plugin {
             return;
         }
         
-        peerConnectionManager.sendData(deviceId, data);
+        peerConnectionManager.sendMessage(deviceId, data);
         call.resolve();
     }
 
@@ -108,6 +162,18 @@ public class P2PCounterPlugin extends Plugin {
     @PluginMethod
     public void stopNFCDiscovery(PluginCall call) {
         nfcManager.stopDiscovery();
+        call.resolve();
+    }
+
+    @PluginMethod
+    public void startKeepalive(PluginCall call) {
+        peerConnectionManager.startKeepalive();
+        call.resolve();
+    }
+
+    @PluginMethod
+    public void stopKeepalive(PluginCall call) {
+        peerConnectionManager.stopKeepalive();
         call.resolve();
     }
 
@@ -138,5 +204,17 @@ public class P2PCounterPlugin extends Plugin {
             eglBase = null;
         }
         super.handleOnDestroy();
+    }
+
+    public void setRemoteDescription(String deviceId, String sdp, String type) {
+        // Implementation
+    }
+
+    public void addIceCandidate(String deviceId, String sdp, int sdpMLineIndex, String sdpMid) {
+        // Implementation
+    }
+
+    public void sendMessage(String deviceId, String data) {
+        // Implementation
     }
 } 

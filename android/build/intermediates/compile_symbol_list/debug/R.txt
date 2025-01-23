@@ -1,0 +1,3 @@
+int string aid_description 0x0
+int string service_name 0x0
+int xml apdu_service 0x0

@@ -29,6 +29,6 @@ This example demonstrates the complete usage of the P2P Counter Capacitor plugin
 - Shows toggle switch for NFC discovery
 
 ## Running the Example
-
+************
 1. Install dependencies:
 ```

@@ -1,3 +1,4 @@
+import type { PluginListenerHandle } from '@capacitor/core';
 export interface Peer {
     deviceId: string;
     connection: RTCPeerConnection;
@@ -51,17 +52,75 @@ export interface P2PCounterPlugin {
         packetLoss: number;
         keepaliveInterval: number;
     }>;
-    addListener(eventName: 'nfcDiscovered', listenerFunc: (data: {
-        deviceId: string;
-        timestamp: number;
-        systemDialogPresented?: boolean;
-        tagType?: string;
-    }) => void): Promise<void>;
-    addListener(eventName: 'nfcPushComplete', listenerFunc: (data: {
-        deviceId: string;
-    }) => void): Promise<void>;
-    addListener(eventName: 'nfcError', listenerFunc: (error: NFCError) => void): Promise<void>;
+    addListener(eventName: 'nfcDiscovered', listenerFunc: (event: NFCDiscoveredEvent) => void): PluginListenerHandle;
+    addListener(eventName: 'nfcError', listenerFunc: (event: NFCErrorEvent) => void): PluginListenerHandle;
+    addListener(eventName: 'nfcPushComplete', listenerFunc: (event: NFCPushCompleteEvent) => void): PluginListenerHandle;
+    addListener(eventName: 'counterReceived', listenerFunc: (event: CounterEvent) => void): PluginListenerHandle;
+    addListener(eventName: 'peerConnected', listenerFunc: (event: PeerEvent) => void): PluginListenerHandle;
+    addListener(eventName: 'peerTimeout', listenerFunc: (event: PeerEvent) => void): PluginListenerHandle;
+    addListener(eventName: 'meshDiscovery', listenerFunc: (event: MeshDiscoveryEvent) => void): PluginListenerHandle;
+    addListener(eventName: 'meshMessage', listenerFunc: (event: MessageEvent) => void): PluginListenerHandle;
+    addListener(eventName: 'messageStatus', listenerFunc: (event: MessageStatusEvent) => void): PluginListenerHandle;
     getPlatform(): Promise<{
         platform: 'ios' | 'android' | 'web';
     }>;
+}
+export interface Attendee {
+    code: string;
+    isPresent: boolean;
+    timestamp?: number;
+    eventId?: string;
+    isManual?: boolean;
+}
+export interface NetworkStats {
+    averageLatency: number;
+    packetLoss: number;
+    keepaliveInterval: number;
+    messageCount?: number;
+    networkStrength?: number;
+}
+export interface NFCDiscoveredEvent {
+    deviceId: string;
+    systemDialogPresented?: boolean;
+}
+export interface NFCErrorEvent {
+    code: number;
+    message?: string;
+}
+export interface NFCPushCompleteEvent {
+    deviceId: string;
+}
+export interface PeerEvent {
+    deviceId: string;
+    isInitiator?: boolean;
+}
+export interface CounterEvent {
+    type?: 'initial_state';
+    code?: string;
+    isPresent?: boolean;
+    timestamp?: number;
+    attendees?: Record<string, Attendee>;
+}
+export interface MeshDiscoveryEvent {
+    data: string;
+}
+export interface MessageEvent {
+    data: string;
+}
+export interface MessageStatusEvent {
+    messageId: string;
+    status: 'pending' | 'success' | 'failed';
+    error?: string;
+    attempts?: number;
+}
+export interface P2PCounterPluginEvents {
+    nfcDiscovered: NFCDiscoveredEvent;
+    nfcError: NFCErrorEvent;
+    nfcPushComplete: NFCPushCompleteEvent;
+    peerConnected: PeerEvent;
+    peerTimeout: PeerEvent;
+    counterReceived: CounterEvent;
+    meshDiscovery: MeshDiscoveryEvent;
+    meshMessage: MessageEvent;
+    messageStatus: MessageStatusEvent;
 }
