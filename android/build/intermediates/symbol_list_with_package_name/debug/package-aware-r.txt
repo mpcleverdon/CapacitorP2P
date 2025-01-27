@@ -1,4 +1,0 @@
-tools.bink.p2pcounter
-string aid_description
-string service_name
-xml apdu_service

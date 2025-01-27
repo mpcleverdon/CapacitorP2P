@@ -1,6 +1,6 @@
 {
   "name": "p2p-counter",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "P2P Counter plugin for Capacitor",
   "type": "module",
   "main": "dist/plugin.cjs.js",

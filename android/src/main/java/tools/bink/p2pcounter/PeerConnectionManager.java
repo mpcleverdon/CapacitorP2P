@@ -178,7 +178,9 @@ public class PeerConnectionManager implements PeerConnection.Observer {
 
         stats.put("averageLatency", avgLatency);
         stats.put("packetLoss", avgPacketLoss);
+        stats.put("keepaliveInterval", KEEPALIVE_INTERVAL);
         stats.put("peerCount", peerCount);
+
         return stats;
     }
 

@@ -177,6 +177,17 @@ public class P2PCounterPlugin extends Plugin {
         call.resolve();
     }
 
+    @PluginMethod
+    public void getNetworkStats(PluginCall call) {
+        try {
+            JSObject stats = peerConnectionManager.getNetworkStats();
+            call.resolve(stats);
+        } catch (Exception e) {
+            Log.e("P2PCounterPlugin", "Error getting network stats", e);
+            call.reject("Failed to get network stats", e);
+        }
+    }
+
     public void notifyWebRTCEvent(String eventName, JSObject data) {
         notifyListeners(eventName, data);
     }
