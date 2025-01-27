@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import ForceGraph2D from 'react-force-graph-2d';
 import { Box, Text, Paper, Group, Stack, useMantineTheme } from '@mantine/core';
 import { IconWifi, IconWifiOff } from '@tabler/icons-react';
+import type { NetworkStats as PluginNetworkStats } from 'capacitor-p2p-counter';
 
 interface Node {
   id: string;
@@ -21,12 +22,8 @@ interface GraphLink {
   strength: number;
 }
 
-interface NetworkStats {
+export interface NetworkStats extends PluginNetworkStats {
   totalPeers: number;
-  averageLatency: number;
-  packetLoss: number;
-  messageCount: number;
-  networkStrength: number;
 }
 
 interface Message {
@@ -40,26 +37,9 @@ interface Message {
 }
 
 interface MeshVisualizerProps {
-  topology: {
-    localDeviceId: string;
-    networkStrength: number;
-    discoveredPeers: Array<{
-      deviceId: string;
-      connectionCount: number;
-      networkStrength: number;
-      lastSeen: number;
-      connectedPeers?: string[];
-    }>;
-  };
-  networkStats?: NetworkStats;
-  activeMessages?: Array<{
-    id: string;
-    path: string[];
-    progress: number;
-    timestamp: number;
-    status?: 'pending' | 'success' | 'failed';
-    attempts?: number;
-  }>;
+  topology: any;
+  networkStats: NetworkStats | null | undefined;
+  activeMessages?: any[];
   width?: number;
   height?: number;
 }
@@ -86,7 +66,13 @@ export function MeshVisualizer({
         connections: topology.discoveredPeers.length,
         lastSeen: Date.now()
       },
-      ...topology.discoveredPeers.map(peer => ({
+      ...topology.discoveredPeers.map((peer: {
+        deviceId: string;
+        networkStrength: number;
+        connectionCount: number;
+        lastSeen: number;
+        connectedPeers?: string[];
+      }) => ({
         id: peer.deviceId,
         strength: peer.networkStrength,
         connections: peer.connectionCount,
@@ -94,15 +80,22 @@ export function MeshVisualizer({
       }))
     ];
 
-    const links: GraphLink[] = topology.discoveredPeers.map(peer => ({
+    const links: GraphLink[] = topology.discoveredPeers.map((peer: {
+      deviceId: string;
+      networkStrength: number;
+      connectedPeers?: string[];
+    }) => ({
       source: nodes.find(node => node.id === topology.localDeviceId)!,
       target: nodes.find(node => node.id === peer.deviceId)!,
       strength: peer.networkStrength
     }));
 
     // Add peer-to-peer connections
-    topology.discoveredPeers.forEach(peer => {
-      peer.connectedPeers?.forEach(connectedPeerId => {
+    topology.discoveredPeers.forEach((peer: {
+      deviceId: string;
+      connectedPeers?: string[];
+    }) => {
+      peer.connectedPeers?.forEach((connectedPeerId: string) => {
         if (connectedPeerId !== topology.localDeviceId) {
           links.push({
             source: nodes.find(node => node.id === peer.deviceId)!,

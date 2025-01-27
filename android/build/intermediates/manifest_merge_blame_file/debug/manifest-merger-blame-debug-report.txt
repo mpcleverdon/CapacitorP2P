@@ -1,0 +1,105 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="tools.bink.p2pcounter" >
+4
+5    <uses-sdk android:minSdkVersion="22" />
+6
+7    <uses-permission android:name="android.permission.NFC" />
+7-->/Users/mpcleverdon/DEV/CapacitorP2P/android/src/main/AndroidManifest.xml:3:5-62
+7-->/Users/mpcleverdon/DEV/CapacitorP2P/android/src/main/AndroidManifest.xml:3:22-59
+8
+9    <uses-feature
+9-->/Users/mpcleverdon/DEV/CapacitorP2P/android/src/main/AndroidManifest.xml:4:5-81
+10        android:name="android.hardware.nfc"
+10-->/Users/mpcleverdon/DEV/CapacitorP2P/android/src/main/AndroidManifest.xml:4:19-54
+11        android:required="true" />
+11-->/Users/mpcleverdon/DEV/CapacitorP2P/android/src/main/AndroidManifest.xml:4:55-78
+12    <uses-feature
+12-->/Users/mpcleverdon/DEV/CapacitorP2P/android/src/main/AndroidManifest.xml:5:5-85
+13        android:name="android.hardware.nfc.hce"
+13-->/Users/mpcleverdon/DEV/CapacitorP2P/android/src/main/AndroidManifest.xml:5:19-58
+14        android:required="true" />
+14-->/Users/mpcleverdon/DEV/CapacitorP2P/android/src/main/AndroidManifest.xml:5:59-82
+15
+16    <uses-permission android:name="android.permission.CAMERA" />
+16-->/Users/mpcleverdon/DEV/CapacitorP2P/android/src/main/AndroidManifest.xml:6:5-65
+16-->/Users/mpcleverdon/DEV/CapacitorP2P/android/src/main/AndroidManifest.xml:6:22-62
+17
+18    <uses-feature android:name="android.hardware.camera" />
+18-->/Users/mpcleverdon/DEV/CapacitorP2P/android/src/main/AndroidManifest.xml:7:5-60
+18-->/Users/mpcleverdon/DEV/CapacitorP2P/android/src/main/AndroidManifest.xml:7:19-57
+19
+20    <application>
+20-->/Users/mpcleverdon/DEV/CapacitorP2P/android/src/main/AndroidManifest.xml:9:5-40:19
+21        <service
+21-->/Users/mpcleverdon/DEV/CapacitorP2P/android/src/main/AndroidManifest.xml:10:9-19:19
+22            android:name="tools.bink.p2pcounter.P2PCounterHCEService"
+22-->/Users/mpcleverdon/DEV/CapacitorP2P/android/src/main/AndroidManifest.xml:10:18-54
+23            android:exported="true"
+23-->/Users/mpcleverdon/DEV/CapacitorP2P/android/src/main/AndroidManifest.xml:11:13-36
+24            android:permission="android.permission.BIND_NFC_SERVICE" >
+24-->/Users/mpcleverdon/DEV/CapacitorP2P/android/src/main/AndroidManifest.xml:12:13-69
+25            <intent-filter>
+25-->/Users/mpcleverdon/DEV/CapacitorP2P/android/src/main/AndroidManifest.xml:13:13-15:29
+26                <action android:name="android.nfc.cardemulation.action.HOST_APDU_SERVICE" />
+26-->/Users/mpcleverdon/DEV/CapacitorP2P/android/src/main/AndroidManifest.xml:14:17-92
+26-->/Users/mpcleverdon/DEV/CapacitorP2P/android/src/main/AndroidManifest.xml:14:25-90
+27            </intent-filter>
+28
+29            <meta-data
+29-->/Users/mpcleverdon/DEV/CapacitorP2P/android/src/main/AndroidManifest.xml:16:13-18:55
+30                android:name="android.nfc.cardemulation.host_apdu_service"
+30-->/Users/mpcleverdon/DEV/CapacitorP2P/android/src/main/AndroidManifest.xml:17:17-75
+31                android:resource="@xml/apdu_service" />
+31-->/Users/mpcleverdon/DEV/CapacitorP2P/android/src/main/AndroidManifest.xml:18:17-53
+32        </service>
+33
+34        <activity
+34-->/Users/mpcleverdon/DEV/CapacitorP2P/android/src/main/AndroidManifest.xml:20:9-35:20
+35            android:name="tools.bink.p2pcounter.P2PCounterActivity"
+35-->/Users/mpcleverdon/DEV/CapacitorP2P/android/src/main/AndroidManifest.xml:21:13-47
+36            android:exported="true" >
+36-->/Users/mpcleverdon/DEV/CapacitorP2P/android/src/main/AndroidManifest.xml:22:13-36
+37            <intent-filter>
+37-->/Users/mpcleverdon/DEV/CapacitorP2P/android/src/main/AndroidManifest.xml:23:13-27:29
+38                <action android:name="android.nfc.action.NDEF_DISCOVERED" />
+38-->/Users/mpcleverdon/DEV/CapacitorP2P/android/src/main/AndroidManifest.xml:24:17-76
+38-->/Users/mpcleverdon/DEV/CapacitorP2P/android/src/main/AndroidManifest.xml:24:25-74
+39
+40                <category android:name="android.intent.category.DEFAULT" />
+40-->/Users/mpcleverdon/DEV/CapacitorP2P/android/src/main/AndroidManifest.xml:25:17-75
+40-->/Users/mpcleverdon/DEV/CapacitorP2P/android/src/main/AndroidManifest.xml:25:27-73
+41
+42                <data android:mimeType="application/p2p-counter" />
+42-->/Users/mpcleverdon/DEV/CapacitorP2P/android/src/main/AndroidManifest.xml:26:17-68
+42-->/Users/mpcleverdon/DEV/CapacitorP2P/android/src/main/AndroidManifest.xml:26:23-65
+43            </intent-filter>
+44            <intent-filter>
+44-->/Users/mpcleverdon/DEV/CapacitorP2P/android/src/main/AndroidManifest.xml:28:13-31:29
+45                <action android:name="android.nfc.action.TECH_DISCOVERED" />
+45-->/Users/mpcleverdon/DEV/CapacitorP2P/android/src/main/AndroidManifest.xml:29:17-76
+45-->/Users/mpcleverdon/DEV/CapacitorP2P/android/src/main/AndroidManifest.xml:29:25-74
+46
+47                <category android:name="android.intent.category.DEFAULT" />
+47-->/Users/mpcleverdon/DEV/CapacitorP2P/android/src/main/AndroidManifest.xml:25:17-75
+47-->/Users/mpcleverdon/DEV/CapacitorP2P/android/src/main/AndroidManifest.xml:25:27-73
+48            </intent-filter>
+49
+50            <meta-data
+50-->/Users/mpcleverdon/DEV/CapacitorP2P/android/src/main/AndroidManifest.xml:32:13-34:59
+51                android:name="android.nfc.action.TECH_DISCOVERED"
+51-->/Users/mpcleverdon/DEV/CapacitorP2P/android/src/main/AndroidManifest.xml:33:17-66
+52                android:resource="@xml/nfc_tech_filter" />
+52-->/Users/mpcleverdon/DEV/CapacitorP2P/android/src/main/AndroidManifest.xml:34:17-56
+53        </activity>
+54        <activity
+54-->/Users/mpcleverdon/DEV/CapacitorP2P/android/src/main/AndroidManifest.xml:36:9-39:52
+55            android:name="tools.bink.p2pcounter.QRScannerActivity"
+55-->/Users/mpcleverdon/DEV/CapacitorP2P/android/src/main/AndroidManifest.xml:37:13-46
+56            android:exported="false"
+56-->/Users/mpcleverdon/DEV/CapacitorP2P/android/src/main/AndroidManifest.xml:38:13-37
+57            android:screenOrientation="portrait" />
+57-->/Users/mpcleverdon/DEV/CapacitorP2P/android/src/main/AndroidManifest.xml:39:13-49
+58    </application>
+59
+60</manifest>

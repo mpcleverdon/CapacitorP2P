@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { P2PCounter } from 'capacitor-p2p-counter';
+import { P2PCounter, MessageStatusEvent } from 'p2p-counter';
 import { Capacitor } from '@capacitor/core';
 import {
   AppShell,
@@ -18,50 +18,33 @@ import {
 import { useInterval } from '@mantine/hooks';
 import type {
   Attendee,
-  NFCErrorEvent,
-  CounterEvent,
-  PeerEvent,
-  MessageEvent,
-  MessageStatusEvent,
-  NFCDiscoveredEvent,
-  NFCPushCompleteEvent
 } from 'capacitor-p2p-counter';
 import { IconNfc, IconNfcOff } from '@tabler/icons-react';
 import { MeshVisualizer } from './components/MeshVisualizer';
 import { PluginListenerHandle } from '@capacitor/core';
-import { CounterData } from 'capacitor-p2p-counter/dist/esm/definitions';
-
-interface Message {
-  id: string;
-  path: string[];
-  progress: number;
-  timestamp: number;
-  status?: 'pending' | 'success' | 'failed';
-  attempts?: number;
-  error?: string;
-}
+import { NetworkStats as NetworkStatsComponent } from './components/NetworkStats';
+import { MessageMonitor } from './components/MessageMonitor';
+import { PeerList } from './components/PeerList';
+import { NetworkStats as NetworkStatsType } from './components/MeshVisualizer';
+import { ConnectionMethods } from './components/ConnectionMethods';
 
 export default function App() {
   const [isNFCActive, setNFCActive] = useState(false);
   const [connectedPeers, setConnectedPeers] = useState<string[]>([]);
-  const [networkHealth, setNetworkHealth] = useState<{
-    averageLatency: number;
-    packetLoss: number;
-    keepaliveInterval: number;
-  }>({ averageLatency: 0, packetLoss: 0, keepaliveInterval: 5000 });
-  const [attendees, setAttendees] = useState<Record<string, Attendee>>({});
+  const [networkHealth, setNetworkHealth] = useState<NetworkStatsType>({
+    averageLatency: 0,
+    packetLoss: 0,
+    keepaliveInterval: 5000,
+    totalPeers: 0
+  });
+  const [attendees] = useState<Record<string, Attendee>>({});
   const [currentEventId, setCurrentEventId] = useState<string>('default-event');
   const [isManualMode, setIsManualMode] = useState(false);
   const [platform] = useState(Capacitor.getPlatform());
   const [meshTopology, setMeshTopology] = useState<any>(null);
-  const [networkStats, setNetworkStats] = useState({
-    totalPeers: 0,
-    averageLatency: 0,
-    packetLoss: 0,
-    messageCount: 0,
-    networkStrength: 0
-  });
-  const [activeMessages, setActiveMessages] = useState<Message[]>([]);
+  const [networkStats, setNetworkStats] = useState<NetworkStatsType | null>(null);
+  const [activeMessages, setActiveMessages] = useState<any[]>([]);
+  const [qrCode, setQRCode] = useState<string>('');
 
   const manualCount = React.useMemo(() => {
     return Object.values(attendees).filter(
@@ -78,176 +61,93 @@ export default function App() {
   useEffect(() => {
     const listeners: PluginListenerHandle[] = [];
 
-    const nfcDiscoveryListener = P2PCounter.addListener(
-      'nfcDiscovered',
-      async (event: NFCDiscoveredEvent) => {
-        console.log('NFC discovered:', event);
-        
-        // iOS shows a system dialog, wait for it
-        if (platform === 'ios' && event.systemDialogPresented) {
-          console.log('iOS NFC system dialog shown');
-          return;
-        }
-        
-        // When we discover a peer via NFC, initialize WebRTC
+    // Initialize mesh network
+    async function initMesh() {
+      try {
         await P2PCounter.initializeWebRTC();
+        await P2PCounter.startNFCDiscovery();
+        await P2PCounter.startKeepalive();
         
-        // Create peer connection as initiator since we received the NFC
-        await P2PCounter.createPeerConnection({
-          deviceId: event.deviceId,
-          isInitiator: true
+        // Configure mesh optimization
+        await P2PCounter.configureMesh({
+          optimizationInterval: 30000,
+          targetRedundancy: 2,
+          loadBalancing: true,
+          adaptiveRouting: true
         });
+      } catch (err) {
+        console.error('Mesh initialization failed:', err);
       }
+    }
+
+    // Set up event listeners
+    listeners.push(
+      P2PCounter.addListener('nfcDiscovered', (data) => {
+        console.log('NFC Discovered:', data);
+      }),
+
+      P2PCounter.addListener('peerConnected', (data) => {
+        setConnectedPeers(prev => [...prev, data.deviceId]);
+      }),
+
+      P2PCounter.addListener('peerTimeout', (data) => {
+        setConnectedPeers(prev => prev.filter(id => id !== data.deviceId));
+      }),
+
+      P2PCounter.addListener('meshDiscovery', (data) => {
+        setMeshTopology(JSON.parse(data.data));
+      }),
+
+      P2PCounter.addListener('messageStatus', (data: MessageStatusEvent) => {
+        setActiveMessages(prev => 
+          prev.map(msg => 
+            msg.id === data.messageId 
+              ? { ...msg, status: data.status, error: data.error }
+              : msg
+          )
+        );
+      }),
+
+      P2PCounter.addListener('meshHealth', (stats) => {
+        console.log('Mesh Health:', stats);
+      })
     );
-    listeners.push(nfcDiscoveryListener);
 
-    const nfcErrorListener = P2PCounter.addListener(
-      'nfcError',
-      (event: NFCErrorEvent) => {
-        console.error('NFC error:', event);
-        
-        // Handle iOS-specific errors
-        if (platform === 'ios') {
-          switch (event.code) {
-            case -1:  // Session timeout
-              setNFCActive(false);
-              break;
-            case -2:  // Invalid user cancel
-              setNFCActive(false);
-              break;
-            case -3:  // System is busy
-              // Maybe try again after delay
-              setTimeout(() => toggleNFC(), 1000);
-              break;
-            default:
-              // Handle other errors
-              setNFCActive(false);
-          }
-        }
-      }
-    );
-    listeners.push(nfcErrorListener);
+    // Start network monitoring
+    const statsInterval = setInterval(async () => {
+      const stats = await P2PCounter.getNetworkStats();
+      setNetworkStats(stats ? {
+        ...stats,
+        totalPeers: connectedPeers.length + 1
+      } as NetworkStatsType : null);
+      setNetworkHealth(stats ? {
+        ...stats,
+        totalPeers: connectedPeers.length + 1
+      } as NetworkStatsType : networkHealth);
+    }, 5000);
 
-    const nfcPushListener = P2PCounter.addListener(
-      'nfcPushComplete',
-      (event: NFCPushCompleteEvent) => {
-        console.log('NFC push completed with device:', event.deviceId);
-      }
-    );
-    listeners.push(nfcPushListener);
+    initMesh();
 
-    const counterListener = P2PCounter.addListener(
-      'counterReceived',
-      (event: CounterEvent) => {
-        // Handle initial state sync
-        if (event.type === 'initial_state') {
-          setAttendees(event.attendees || {});
-          return;
-        }
-        
-        setAttendees(prev => ({
-          ...prev,
-          [event.code || '']: {
-            code: event.code || '',
-            isPresent: event.isPresent || false,
-            timestamp: event.timestamp || Date.now(),
-            eventId: currentEventId,
-            isManual: false
-          } as Attendee
-        }));
-      }
-    );
-    listeners.push(counterListener);
-
-    const peerConnectedListener = P2PCounter.addListener(
-      'peerConnected',
-      (event: PeerEvent) => {
-        setConnectedPeers(prev => [...prev, event.deviceId]);
-        // If we're the initiator, send our current state
-        if (event.isInitiator) {
-          P2PCounter.sendInitialState({
-            deviceId: event.deviceId,
-            state: Object.fromEntries(
-              Object.entries(attendees).map(([key, value]) => [
-                key,
-                {
-                  code: value.code,
-                  isPresent: value.isPresent,
-                  eventId: value.eventId || currentEventId,
-                  isManual: value.isManual || false,
-                  timestamp: value.timestamp || Date.now()
-                } as CounterData
-              ])
-            )
-          });
-        }
-      }
-    );
-    listeners.push(peerConnectedListener);
-
-    const peerTimeoutListener = P2PCounter.addListener('peerTimeout', (data: PeerEvent) => {
-      setConnectedPeers(prev => prev.filter(id => id !== data.deviceId));
-    });
-    listeners.push(peerTimeoutListener);
-
-    // Start keepalive
-    P2PCounter.startKeepalive();
-
-    const meshDiscoveryListener = P2PCounter.addListener('meshDiscovery', (data) => {
-      setMeshTopology(JSON.parse(data.data));
-    });
-
-    const messageListener = P2PCounter.addListener('meshMessage', (data: MessageEvent) => {
-      const message = JSON.parse(data.data);
-      if (message._path) {
-        setActiveMessages(prev => [...prev, {
-          id: message._messageId,
-          path: message._path,
-          progress: 0,
-          timestamp: Date.now(),
-          status: 'pending',
-          attempts: 1
-        }]);
-      }
-    });
-
-    const messageStatusListener = P2PCounter.addListener('messageStatus', (data: MessageStatusEvent) => {
-      const { messageId, status, error, attempts } = data;
-      setActiveMessages(prev => 
-        prev.map(msg => 
-          msg.id === messageId 
-            ? { ...msg, status, error, attempts: attempts || msg.attempts }
-            : msg
-        )
-      );
-    });
-
-    // Cleanup listeners
     return () => {
-      listeners.forEach(listener => {
-        if (typeof listener.remove === 'function') {
-          listener.remove();
-        }
-      });
+      listeners.forEach(listener => listener.remove());
+      clearInterval(statsInterval);
       P2PCounter.stopKeepalive();
-      meshDiscoveryListener.remove();
-      messageListener.remove();
-      messageStatusListener.remove();
+      P2PCounter.stopNFCDiscovery();
     };
-  }, [platform]);
+  }, []);
 
   // Poll network health every 5 seconds
   useInterval(async () => {
     if (connectedPeers.length > 0) {
       const stats = await P2PCounter.getNetworkStats();
-      setNetworkHealth(stats);
-      setNetworkStats({
-        totalPeers: connectedPeers.length,
-        averageLatency: stats.averageLatency,
-        packetLoss: stats.packetLoss * 100,
-        messageCount: activeMessages.length,
-        networkStrength: 0.5 // Placeholder value, replace with actual calculation
-      });
+      setNetworkHealth(stats ? {
+        ...stats,
+        totalPeers: connectedPeers.length + 1
+      } as NetworkStatsType : networkHealth);
+      setNetworkStats(stats ? {
+        ...stats,
+        totalPeers: connectedPeers.length + 1
+      } as NetworkStatsType : null);
     }
   }, 5000);
 
@@ -358,6 +258,52 @@ export default function App() {
     );
   };
 
+  const sendTestMessage = async () => {
+    try {
+      await P2PCounter.sendCounter({
+        code: `TEST-${Date.now()}`,
+        isPresent: true,
+        eventId: currentEventId,
+        priority: 'HIGH',
+        retryPolicy: {
+          maxAttempts: 3,
+          backoffMs: 1000,
+          timeout: 5000
+        }
+      });
+    } catch (err) {
+      console.error('Failed to send message:', err);
+    }
+  };
+
+  const handleShare = async () => {
+    try {
+      await P2PCounter.shareConnectionInfo();
+    } catch (err) {
+      console.error('Share failed:', err);
+    }
+  };
+
+  const handleScanQR = async () => {
+    try {
+      await P2PCounter.scanConnectionQR();
+    } catch (err) {
+      console.error('QR scan failed:', err);
+    }
+  };
+
+  useEffect(() => {
+    const generateQR = async () => {
+      try {
+        const { qrData } = await P2PCounter.generateConnectionQR();
+        setQRCode(qrData);
+      } catch (err) {
+        console.error('QR generation failed:', err);
+      }
+    };
+    generateQR();
+  }, []);
+
   return (
     <AppShell>
       <Container size="sm">
@@ -465,6 +411,31 @@ export default function App() {
               />
             </Card>
           )}
+
+          <Card withBorder>
+            <Title order={2}>Network Stats</Title>
+            <NetworkStatsComponent stats={networkStats} />
+          </Card>
+
+          <Card withBorder>
+            <Title order={2}>Peer Management</Title>
+            <PeerList 
+              peers={connectedPeers}
+              onDisconnect={(peerId) => P2PCounter.disconnectPeer({ deviceId: peerId })}
+            />
+          </Card>
+
+          <Card withBorder>
+            <Title order={2}>Message Monitor</Title>
+            <MessageMonitor messages={activeMessages} />
+            <Button onClick={sendTestMessage}>Send Test Message</Button>
+          </Card>
+
+          <ConnectionMethods
+            onShare={handleShare}
+            onScanQR={handleScanQR}
+            qrCode={qrCode}
+          />
         </Stack>
       </Container>
     </AppShell>

@@ -1,6 +1,6 @@
 {
   "name": "p2p-counter",
-  "version": "1.2.1",
+  "version": "1.2.3",
   "description": "P2P Counter plugin for Capacitor",
   "type": "module",
   "main": "dist/plugin.cjs.js",
@@ -28,15 +28,16 @@
     "native"
   ],
   "devDependencies": {
-    "@capacitor/core": "^6.2.0",
-    "@capacitor/ios": "^6.2.0",
-    "@capacitor/android": "^6.2.0",
+    "@capacitor/android": "^5.0.0",
+    "@capacitor/core": "^5.0.0",
+    "@capacitor/ios": "^5.0.0",
+    "@types/qrcode": "^1.5.5",
     "rimraf": "^5.0.0",
     "rollup": "^4.0.0",
     "typescript": "^5.0.0"
   },
   "peerDependencies": {
-    "@capacitor/core": "^6.2.0"
+    "@capacitor/core": "^5.0.0"
   },
   "capacitor": {
     "ios": {
@@ -55,5 +56,8 @@
     "type": "git",
     "url": "https://github.com/mpcleverdon/capacitor-p2p-counter.git"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "qrcode": "^1.5.4"
+  }
 }

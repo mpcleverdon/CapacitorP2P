@@ -1,0 +1,6 @@
+int id viewFinder 0x0
+int layout activity_qr_scanner 0x0
+int string aid_description 0x0
+int string service_name 0x0
+int xml apdu_service 0x0
+int xml nfc_tech_filter 0x0

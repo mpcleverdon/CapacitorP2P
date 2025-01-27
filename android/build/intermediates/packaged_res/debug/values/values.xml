@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="aid_description">P2P Counter AID</string>
+    <string name="service_name">P2P Counter NFC Service</string>
+</resources>

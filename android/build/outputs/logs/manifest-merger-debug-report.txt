@@ -1,0 +1,102 @@
+-- Merging decision tree log ---
+manifest
+ADDED from /Users/mpcleverdon/DEV/CapacitorP2P/android/src/main/AndroidManifest.xml:2:1-41:12
+INJECTED from /Users/mpcleverdon/DEV/CapacitorP2P/android/src/main/AndroidManifest.xml:2:1-41:12
+	package
+		INJECTED from /Users/mpcleverdon/DEV/CapacitorP2P/android/src/main/AndroidManifest.xml
+	xmlns:android
+		ADDED from /Users/mpcleverdon/DEV/CapacitorP2P/android/src/main/AndroidManifest.xml:2:11-69
+uses-permission#android.permission.NFC
+ADDED from /Users/mpcleverdon/DEV/CapacitorP2P/android/src/main/AndroidManifest.xml:3:5-62
+	android:name
+		ADDED from /Users/mpcleverdon/DEV/CapacitorP2P/android/src/main/AndroidManifest.xml:3:22-59
+uses-feature#android.hardware.nfc
+ADDED from /Users/mpcleverdon/DEV/CapacitorP2P/android/src/main/AndroidManifest.xml:4:5-81
+	android:required
+		ADDED from /Users/mpcleverdon/DEV/CapacitorP2P/android/src/main/AndroidManifest.xml:4:55-78
+	android:name
+		ADDED from /Users/mpcleverdon/DEV/CapacitorP2P/android/src/main/AndroidManifest.xml:4:19-54
+uses-feature#android.hardware.nfc.hce
+ADDED from /Users/mpcleverdon/DEV/CapacitorP2P/android/src/main/AndroidManifest.xml:5:5-85
+	android:required
+		ADDED from /Users/mpcleverdon/DEV/CapacitorP2P/android/src/main/AndroidManifest.xml:5:59-82
+	android:name
+		ADDED from /Users/mpcleverdon/DEV/CapacitorP2P/android/src/main/AndroidManifest.xml:5:19-58
+uses-permission#android.permission.CAMERA
+ADDED from /Users/mpcleverdon/DEV/CapacitorP2P/android/src/main/AndroidManifest.xml:6:5-65
+	android:name
+		ADDED from /Users/mpcleverdon/DEV/CapacitorP2P/android/src/main/AndroidManifest.xml:6:22-62
+uses-feature#android.hardware.camera
+ADDED from /Users/mpcleverdon/DEV/CapacitorP2P/android/src/main/AndroidManifest.xml:7:5-60
+	android:name
+		ADDED from /Users/mpcleverdon/DEV/CapacitorP2P/android/src/main/AndroidManifest.xml:7:19-57
+application
+ADDED from /Users/mpcleverdon/DEV/CapacitorP2P/android/src/main/AndroidManifest.xml:9:5-40:19
+service#tools.bink.p2pcounter.P2PCounterHCEService
+ADDED from /Users/mpcleverdon/DEV/CapacitorP2P/android/src/main/AndroidManifest.xml:10:9-19:19
+	android:exported
+		ADDED from /Users/mpcleverdon/DEV/CapacitorP2P/android/src/main/AndroidManifest.xml:11:13-36
+	android:permission
+		ADDED from /Users/mpcleverdon/DEV/CapacitorP2P/android/src/main/AndroidManifest.xml:12:13-69
+	android:name
+		ADDED from /Users/mpcleverdon/DEV/CapacitorP2P/android/src/main/AndroidManifest.xml:10:18-54
+intent-filter#action:name:android.nfc.cardemulation.action.HOST_APDU_SERVICE
+ADDED from /Users/mpcleverdon/DEV/CapacitorP2P/android/src/main/AndroidManifest.xml:13:13-15:29
+action#android.nfc.cardemulation.action.HOST_APDU_SERVICE
+ADDED from /Users/mpcleverdon/DEV/CapacitorP2P/android/src/main/AndroidManifest.xml:14:17-92
+	android:name
+		ADDED from /Users/mpcleverdon/DEV/CapacitorP2P/android/src/main/AndroidManifest.xml:14:25-90
+meta-data#android.nfc.cardemulation.host_apdu_service
+ADDED from /Users/mpcleverdon/DEV/CapacitorP2P/android/src/main/AndroidManifest.xml:16:13-18:55
+	android:resource
+		ADDED from /Users/mpcleverdon/DEV/CapacitorP2P/android/src/main/AndroidManifest.xml:18:17-53
+	android:name
+		ADDED from /Users/mpcleverdon/DEV/CapacitorP2P/android/src/main/AndroidManifest.xml:17:17-75
+activity#tools.bink.p2pcounter.P2PCounterActivity
+ADDED from /Users/mpcleverdon/DEV/CapacitorP2P/android/src/main/AndroidManifest.xml:20:9-35:20
+	android:exported
+		ADDED from /Users/mpcleverdon/DEV/CapacitorP2P/android/src/main/AndroidManifest.xml:22:13-36
+	android:name
+		ADDED from /Users/mpcleverdon/DEV/CapacitorP2P/android/src/main/AndroidManifest.xml:21:13-47
+intent-filter#action:name:android.nfc.action.NDEF_DISCOVERED+category:name:android.intent.category.DEFAULT+data:mimeType:application/p2p-counter
+ADDED from /Users/mpcleverdon/DEV/CapacitorP2P/android/src/main/AndroidManifest.xml:23:13-27:29
+action#android.nfc.action.NDEF_DISCOVERED
+ADDED from /Users/mpcleverdon/DEV/CapacitorP2P/android/src/main/AndroidManifest.xml:24:17-76
+	android:name
+		ADDED from /Users/mpcleverdon/DEV/CapacitorP2P/android/src/main/AndroidManifest.xml:24:25-74
+category#android.intent.category.DEFAULT
+ADDED from /Users/mpcleverdon/DEV/CapacitorP2P/android/src/main/AndroidManifest.xml:25:17-75
+	android:name
+		ADDED from /Users/mpcleverdon/DEV/CapacitorP2P/android/src/main/AndroidManifest.xml:25:27-73
+data
+ADDED from /Users/mpcleverdon/DEV/CapacitorP2P/android/src/main/AndroidManifest.xml:26:17-68
+	android:mimeType
+		ADDED from /Users/mpcleverdon/DEV/CapacitorP2P/android/src/main/AndroidManifest.xml:26:23-65
+intent-filter#action:name:android.nfc.action.TECH_DISCOVERED+category:name:android.intent.category.DEFAULT
+ADDED from /Users/mpcleverdon/DEV/CapacitorP2P/android/src/main/AndroidManifest.xml:28:13-31:29
+action#android.nfc.action.TECH_DISCOVERED
+ADDED from /Users/mpcleverdon/DEV/CapacitorP2P/android/src/main/AndroidManifest.xml:29:17-76
+	android:name
+		ADDED from /Users/mpcleverdon/DEV/CapacitorP2P/android/src/main/AndroidManifest.xml:29:25-74
+meta-data#android.nfc.action.TECH_DISCOVERED
+ADDED from /Users/mpcleverdon/DEV/CapacitorP2P/android/src/main/AndroidManifest.xml:32:13-34:59
+	android:resource
+		ADDED from /Users/mpcleverdon/DEV/CapacitorP2P/android/src/main/AndroidManifest.xml:34:17-56
+	android:name
+		ADDED from /Users/mpcleverdon/DEV/CapacitorP2P/android/src/main/AndroidManifest.xml:33:17-66
+activity#tools.bink.p2pcounter.QRScannerActivity
+ADDED from /Users/mpcleverdon/DEV/CapacitorP2P/android/src/main/AndroidManifest.xml:36:9-39:52
+	android:screenOrientation
+		ADDED from /Users/mpcleverdon/DEV/CapacitorP2P/android/src/main/AndroidManifest.xml:39:13-49
+	android:exported
+		ADDED from /Users/mpcleverdon/DEV/CapacitorP2P/android/src/main/AndroidManifest.xml:38:13-37
+	android:name
+		ADDED from /Users/mpcleverdon/DEV/CapacitorP2P/android/src/main/AndroidManifest.xml:37:13-46
+uses-sdk
+INJECTED from /Users/mpcleverdon/DEV/CapacitorP2P/android/src/main/AndroidManifest.xml reason: use-sdk injection requested
+INJECTED from /Users/mpcleverdon/DEV/CapacitorP2P/android/src/main/AndroidManifest.xml
+INJECTED from /Users/mpcleverdon/DEV/CapacitorP2P/android/src/main/AndroidManifest.xml
+	android:targetSdkVersion
+		INJECTED from /Users/mpcleverdon/DEV/CapacitorP2P/android/src/main/AndroidManifest.xml
+	android:minSdkVersion
+		INJECTED from /Users/mpcleverdon/DEV/CapacitorP2P/android/src/main/AndroidManifest.xml

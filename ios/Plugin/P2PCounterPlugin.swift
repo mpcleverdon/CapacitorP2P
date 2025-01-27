@@ -391,6 +391,111 @@ public class P2PCounterPlugin: CAPPlugin, NFCNDEFReaderSessionDelegate, NFCTagRe
         }
     }
     
+    @objc func shareConnectionInfo(_ call: CAPPluginCall) {
+        let connectionData: [String: Any] = [
+            "deviceId": getDeviceId(),
+            "timestamp": Date().timeIntervalSince1970,
+            "webrtcConfig": webrtcConfig
+        ]
+        
+        guard let jsonData = try? JSONSerialization.data(withJSONObject: connectionData),
+              let base64Data = jsonData.base64EncodedString().data(using: .utf8) else {
+            call.reject("Failed to encode connection data")
+            return
+        }
+        
+        let activityVC = UIActivityViewController(
+            activityItems: ["p2pcounter://\(base64Data)"],
+            applicationActivities: nil
+        )
+        
+        DispatchQueue.main.async {
+            self.bridge?.viewController?.present(activityVC, animated: true)
+            call.resolve()
+        }
+    }
+
+    @objc func receiveConnectionInfo(_ call: CAPPluginCall) {
+        guard let sharedData = call.getString("sharedData") else {
+            call.reject("No shared data provided")
+            return
+        }
+        
+        do {
+            let cleanData = sharedData.replacingOccurrences(of: "p2pcounter://", with: "")
+            guard let decodedData = Data(base64Encoded: cleanData),
+                  let json = try JSONSerialization.jsonObject(with: decodedData) as? [String: Any],
+                  let deviceId = json["deviceId"] as? String else {
+                throw NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "Invalid data format"])
+            }
+            
+            createPeerConnection(deviceId: deviceId, isInitiator: true)
+            call.resolve()
+        } catch {
+            call.reject("Failed to process connection data", error)
+        }
+    }
+
+    @objc func generateConnectionQR(_ call: CAPPluginCall) {
+        let connectionData: [String: Any] = [
+            "deviceId": getDeviceId(),
+            "timestamp": Date().timeIntervalSince1970,
+            "webrtcConfig": webrtcConfig
+        ]
+        
+        guard let jsonData = try? JSONSerialization.data(withJSONObject: connectionData),
+              let jsonString = String(data: jsonData, encoding: .utf8) else {
+            call.reject("Failed to generate QR data")
+            return
+        }
+        
+        let qrFilter = CIFilter(name: "CIQRCodeGenerator")
+        qrFilter?.setValue(jsonString.data(using: .utf8), forKey: "inputMessage")
+        
+        guard let qrImage = qrFilter?.outputImage else {
+            call.reject("Failed to generate QR code")
+            return
+        }
+        
+        let transform = CGAffineTransform(scaleX: 10, y: 10)
+        let scaledQrImage = qrImage.transformed(by: transform)
+        
+        let context = CIContext()
+        guard let cgImage = context.createCGImage(scaledQrImage, from: scaledQrImage.extent) else {
+            call.reject("Failed to create QR image")
+            return
+        }
+        
+        let uiImage = UIImage(cgImage: cgImage)
+        guard let imageData = uiImage.pngData() else {
+            call.reject("Failed to encode QR image")
+            return
+        }
+        
+        let base64String = imageData.base64EncodedString()
+        call.resolve(["qrData": "data:image/png;base64,\(base64String)"])
+    }
+
+    @objc func scanConnectionQR(_ call: CAPPluginCall) {
+        DispatchQueue.main.async {
+            let scannerVC = QRScannerViewController { [weak self] result in
+                switch result {
+                case .success(let scannedData):
+                    do {
+                        let json = try JSONSerialization.jsonObject(with: scannedData.data(using: .utf8)!) as! [String: Any]
+                        self?.createPeerConnection(deviceId: json["deviceId"] as! String, isInitiator: true)
+                        call.resolve()
+                    } catch {
+                        call.reject("Invalid QR code data", error)
+                    }
+                case .failure(let error):
+                    call.reject("Failed to scan QR code", error)
+                }
+            }
+            self.bridge?.viewController?.present(scannerVC, animated: true)
+        }
+    }
+    
     // MARK: - NFCNDEFReaderSessionDelegate
     
     public func readerSession(_ session: NFCNDEFReaderSession, didDetectNDEFs messages: [NFCNDEFMessage]) {

@@ -1,0 +1,7 @@
+tools.bink.p2pcounter
+id viewFinder
+layout activity_qr_scanner
+string aid_description
+string service_name
+xml apdu_service
+xml nfc_tech_filter

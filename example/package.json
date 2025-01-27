@@ -1,6 +1,6 @@
 {
   "name": "p2p-counter-example",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Example app demonstrating P2P Counter plugin usage",
   "scripts": {
     "dev": "vite",
@@ -14,10 +14,10 @@
     "@mantine/core": "^7.0.0",
     "@mantine/hooks": "^7.0.0",
     "@tabler/icons-react": "^2.47.0",
-    "capacitor-p2p-counter": "file:..",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-force-graph-2d": "^1.27.0"
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "react-force-graph-2d": "^1.27.0",
+    "p2p-counter": "file:.."
   },
   "devDependencies": {
     "@capacitor/cli": "^5.0.0",

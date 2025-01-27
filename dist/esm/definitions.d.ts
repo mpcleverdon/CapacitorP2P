@@ -37,6 +37,12 @@ export interface P2PCounterPlugin {
         code: string;
         isPresent: boolean;
         eventId: string;
+        priority?: 'HIGH' | 'MEDIUM' | 'LOW';
+        retryPolicy?: {
+            maxAttempts: number;
+            backoffMs: number;
+            timeout: number;
+        };
     }): Promise<void>;
     sendInitialState(options: {
         deviceId: string;
@@ -52,6 +58,12 @@ export interface P2PCounterPlugin {
         packetLoss: number;
         keepaliveInterval: number;
     }>;
+    configureMesh(options: {
+        optimizationInterval: number;
+        targetRedundancy: number;
+        loadBalancing: boolean;
+        adaptiveRouting: boolean;
+    }): Promise<void>;
     addListener(eventName: 'nfcDiscovered', listenerFunc: (event: NFCDiscoveredEvent) => void): PluginListenerHandle;
     addListener(eventName: 'nfcError', listenerFunc: (event: NFCErrorEvent) => void): PluginListenerHandle;
     addListener(eventName: 'nfcPushComplete', listenerFunc: (event: NFCPushCompleteEvent) => void): PluginListenerHandle;
@@ -61,9 +73,22 @@ export interface P2PCounterPlugin {
     addListener(eventName: 'meshDiscovery', listenerFunc: (event: MeshDiscoveryEvent) => void): PluginListenerHandle;
     addListener(eventName: 'meshMessage', listenerFunc: (event: MessageEvent) => void): PluginListenerHandle;
     addListener(eventName: 'messageStatus', listenerFunc: (event: MessageStatusEvent) => void): PluginListenerHandle;
+    addListener(eventName: 'meshHealth', listenerFunc: (event: {
+        redundancy: number;
+        avgHopCount: number;
+        stability: number;
+    }) => void): PluginListenerHandle;
     getPlatform(): Promise<{
         platform: 'ios' | 'android' | 'web';
     }>;
+    shareConnectionInfo(): Promise<void>;
+    receiveConnectionInfo(options: {
+        sharedData: string;
+    }): Promise<void>;
+    generateConnectionQR(): Promise<{
+        qrData: string;
+    }>;
+    scanConnectionQR(): Promise<void>;
 }
 export interface Attendee {
     code: string;
