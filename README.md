@@ -5,7 +5,7 @@ A Capacitor plugin that enables mesh network communication between multiple mobi
 ## Installation
 
 ```bash
-npm install capacitor-p2p-counter
+npm install p2p-counter
 npx cap sync
 ```
 
